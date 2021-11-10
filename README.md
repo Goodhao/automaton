@@ -25,3 +25,73 @@ NFA to DFA:
 to
 
 ![](result2.png)
+
+# Usage
+
+According to your demands, modify test.cpp
+
+I will show you how to obtain the second result above.
+
+In this case, test.cpp looks like
+
+``` cpp
+    automaton a;
+    a.input();
+    a.draw("origin2");
+    automaton b=a.turn_to_DFA();
+    b.draw("result2");
+```
+
+Remark: If you want to try the first case, you need to change turn_to_DFA() to turn_to_NFA()
+
+When test.cpp is ready,
+
+In Visual Studio
+
+ - Open project 状态机.vcxproj
+
+ - Run
+
+Or you can use other ways you like to compile code and run program.
+
+When program is running,
+
+Input data as following :
+1
+
+3
+
+q0 q1 q2
+
+q0
+
+1
+
+q2
+
+2
+
+0 1
+
+
+0 q0 q1
+
+1 q0
+
+&amp;
+
+
+1 q2
+
+&amp;
+
+
+&amp;
+
+The program will output two pictures origin2.png and result2.png.
+
+The origin2.png is of the origin NFA you input.
+
+The result2.png is of the result DFA you expect.
+
+The meaning of each item of our input data can be obtained by the hint information that our program produces.
