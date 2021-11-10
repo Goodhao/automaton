@@ -3,7 +3,7 @@
 #include <queue>
 #include <fstream>
 #include <sstream>
-#define fin cin
+//#define fin cin
 using namespace std;
 
 string encode(set<string>& s) {
@@ -28,7 +28,7 @@ string style(string s,string x) {
 	else return x;
 }
 void automaton::input() {
-	//ifstream fin("in.txt");
+	ifstream fin("in.txt");
 	cout << "Please input the type of FA, 0 for DFA, 1 for NFA, 2 for eps_NFA" << endl;
 	int num;
 	fin >> num;
