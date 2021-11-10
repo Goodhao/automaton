@@ -1,16 +1,16 @@
-#Introduction
+# Introduction
 
 It is a tool about finite automaton.
 
 You can use it for
 
- - converting $$\varepsilon$$-NFA to NFA or NFA to DFA
+ - converting ![](http://latex.codecogs.com/gif.latex?\\\varepsilon})-NFA to NFA or NFA to DFA
 
  - drawing the corresponding pictures.
 
-#Exhibition
+# Exhibition
 
-$$\varepsilon$$-NFA to NFA
+![](http://latex.codecogs.com/gif.latex?\\\varepsilon})-NFA to NFA
 
 ![](origin.png)
 
