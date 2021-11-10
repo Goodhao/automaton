@@ -57,6 +57,7 @@ Or you can use other ways you like to compile code and run program.
 When program is running,
 
 Input data as following :
+``` cpp
 1
 
 3
@@ -78,15 +79,16 @@ q2
 
 1 q0
 
-&amp;
+#
 
 
 1 q2
 
-&amp;
+#
 
 
-&amp;
+#
+```
 
 The program will output two pictures origin2.png and result2.png.
 
