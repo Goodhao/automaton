@@ -120,13 +120,12 @@ automaton automaton::turn_to_NFA() {
 	for (auto x : _state) {
 		set<string> c = eps_closure(x);
 		for (auto y : c) {
-			if (y != x) {
-				if (_final_state.count(y) != 0) res._final_state.insert(x);
-				for (auto chr : _sigma) if (chr != "eps") {
-					if (_to.count(make_pair(y, chr)) != 0) {
-						for (auto z : _to[make_pair(y, chr)]) {
-							res._to[make_pair(x, chr)].insert(z);
-						}
+			if (_final_state.count(y) != 0) res._final_state.insert(x);
+			for (auto chr : _sigma) if (chr != "eps") {
+				if (_to.count(make_pair(y, chr)) != 0) {
+					for (auto z : _to[make_pair(y, chr)]) {
+						set<string> c2 = eps_closure(z);
+						for (auto w : c2) res._to[make_pair(x, chr)].insert(w);
 					}
 				}
 			}
