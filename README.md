@@ -82,3 +82,39 @@ The origin2.png is of the origin NFA you input.
 The result2.png is of the result DFA you expect.
 
 The meaning of each item of our input data can be obtained by the hint information that our program produces.
+
+The input for the first case is
+```cpp
+2
+4
+q0 q1 q2 q3
+q0
+1
+q3
+3
+0 1 eps
+
+0 q1 q3
+1 q1
+eps q1 q3
+#
+
+0 q2
+1 q1 q2
+#
+
+0 q2 q3
+1 q0
+eps q3
+#
+
+1 q0
+#
+```
+with the test.cpp
+```cpp
+a.input();
+a.draw("origin");
+automaton b=a.turn_to_NFA();
+b.draw("result");
+```
