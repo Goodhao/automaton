@@ -54,38 +54,23 @@ In Visual Studio
 
 Or you can use other ways you like to compile code and run program.
 
-While program is running,
-
-Input data as following :
+While program is running, input data as following :
 ``` cpp
 1
-
 3
-
 q0 q1 q2
-
 q0
-
 1
-
 q2
-
 2
-
 0 1
 
-
 0 q0 q1
-
 1 q0
-
 #
-
 
 1 q2
-
 #
-
 
 #
 ```
