@@ -42,9 +42,9 @@ In this case, test.cpp looks like
     b.draw("result2");
 ```
 
-Remark: If you want to try the first case, you need to change turn_to_DFA() to turn_to_NFA()
+**Remark: If you want to try the first case, you need to change turn_to_DFA() to turn_to_NFA()**
 
-When test.cpp is ready,
+Assume test.cpp is ready,
 
 In Visual Studio
 
@@ -54,7 +54,7 @@ In Visual Studio
 
 Or you can use other ways you like to compile code and run program.
 
-When program is running,
+While program is running,
 
 Input data as following :
 ``` cpp
