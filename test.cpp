@@ -6,8 +6,6 @@ using namespace std;
 int main() {
 	automaton a;
 	a.input();
-	a.draw("origin");
-	automaton b=a.turn_to_NFA();
-	b.draw("result");
+	a.output_grammer("DFA_grammer");
 	return 0;
 }

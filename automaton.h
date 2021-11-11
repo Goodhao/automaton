@@ -14,6 +14,9 @@ public:
 	automaton turn_to_NFA();
 	automaton turn_to_DFA();
 	set<string> eps_closure(string &st);
+	set<string> grammer();
+	void output_grammer(string filename);
+	void translate(set<string> G);
 	void draw(string filename);
 	void input();
 private:

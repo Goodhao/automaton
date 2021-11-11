@@ -207,3 +207,48 @@ void automaton::draw(string filename) {
 	string cmd = "Graphviz\\bin\\dot.exe -T png out.dot -o " + filename + ".png";
 	system(cmd.c_str());
 }
+
+set<string> automaton::grammer() {
+	assert(_fa_type == "DFA");
+	map<string, set<string>> res;
+	set<string> G;
+	for (auto x : _to) {
+		if (!x.second.empty())
+			for (auto y : x.second) {
+				res[x.first.first].insert(x.first.second + y);
+				if (_final_state.count(y)) res[x.first.first].insert(x.first.second);
+			}
+	}
+	if (_final_state.count(_initial_state)) res[_initial_state].insert("\u03B5");
+	for (auto x : res) {
+		if (!x.second.empty()) {
+			bool f = 0;
+			string s = "";
+			for (auto y : x.second) {
+				if (f == 0) s += x.first + " -> " + y;
+				else s += "|" + y;
+				f = 1;
+			}
+			G.insert(s);
+		}
+	}
+	return G;
+}
+
+void automaton::output_grammer(string filename) {
+	assert(_fa_type == "DFA");
+	set<string> G = grammer();
+	filename += ".txt";
+	ofstream fout(filename.c_str());
+	fout << "variable: ";
+	for (auto s : _state) fout << s << " ";
+	fout << endl;
+	fout << "terminal: ";
+	for (auto chr : _sigma) fout << chr << " ";
+	fout << endl;
+	fout << "start symbol: " << _initial_state << endl;
+	fout << "production: " << endl;
+	for (auto s : G) {
+		fout << s << endl;
+	}
+}

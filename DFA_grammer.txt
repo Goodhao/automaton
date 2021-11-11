@@ -1,0 +1,8 @@
+variable: q0 q1 q2 q3 
+terminal: 0 1 
+start symbol: q0
+production: 
+q0 -> 0q1|1|1q3|¦Å
+q1 -> 0|0q0|1|1q3
+q2 -> 0|0q3|1|1q0
+q3 -> 0q1|1q1
