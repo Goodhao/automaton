@@ -1,7 +1,7 @@
 digraph cinite_state_machine {
 rankdir=LR;
 size="50,50"
-node [shape = doublecircle]; q0 q2 q3 ;
+node [shape = doublecircle]; q0 q3 ;
 node [shape = circle]; q0;
 node [shape = plain]; "S";
 "S" -> q0;
