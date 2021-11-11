@@ -6,7 +6,7 @@ You can use it for
 
  - converting ![](http://latex.codecogs.com/gif.latex?\\varepsilon)-NFA to NFA or NFA to DFA
 
- - drawing the corresponding pictures.
+ - drawing the corresponding pictures. (By Graphviz)
 
 # Exhibition
 
