@@ -175,6 +175,21 @@ automaton automaton::turn_to_DFA() {
 	res._fa_type = "DFA";
 	res._initial_state = encode(s);
 	res._sigma = _sigma;
+	bool additional_point = 0;
+	for (auto s : res._state) {
+		for (auto chr : res._sigma) {
+			if (res._to.count(make_pair(s, chr)) == 0) {
+				res._to[make_pair(s, chr)].insert("trap");
+				additional_point = 1;
+			}
+		}
+	}
+	if (additional_point) {
+		res._state.insert("trap");
+		for (auto chr : res._sigma) {
+			res._to[make_pair("trap", chr)].insert("trap");
+		}
+	}
 	return res;
 }
 void automaton::draw(string filename) {
@@ -208,47 +223,103 @@ void automaton::draw(string filename) {
 	system(cmd.c_str());
 }
 
-set<string> automaton::grammer() {
+set<string> automaton::grammer(string dir) {
 	assert(_fa_type == "DFA");
-	map<string, set<string>> res;
-	set<string> G;
-	for (auto x : _to) {
-		if (!x.second.empty())
-			for (auto y : x.second) {
-				res[x.first.first].insert(x.first.second + y);
-				if (_final_state.count(y)) res[x.first.first].insert(x.first.second);
-			}
-	}
-	if (_final_state.count(_initial_state)) res[_initial_state].insert("\u03B5");
-	for (auto x : res) {
-		if (!x.second.empty()) {
-			bool f = 0;
-			string s = "";
-			for (auto y : x.second) {
-				if (f == 0) s += x.first + " -> " + y;
-				else s += "|" + y;
-				f = 1;
-			}
-			G.insert(s);
+	if (dir == "right") {
+		map<string, set<string>> res;
+		set<string> G;
+		for (auto x : _to) {
+			if (!x.second.empty())
+				for (auto y : x.second) {
+					res[x.first.first].insert(x.first.second + y);
+					if (_final_state.count(y)) res[x.first.first].insert(x.first.second);
+				}
 		}
+		if (_final_state.count(_initial_state)) res[_initial_state].insert("\u03B5");
+		for (auto x : res) {
+			if (!x.second.empty()) {
+				bool f = 0;
+				string s = "";
+				for (auto y : x.second) {
+					if (f == 0) s += x.first + " -> " + y;
+					else s += "|" + y;
+					f = 1;
+				}
+				G.insert(s);
+			}
+		}
+		return G;
 	}
-	return G;
+	else if (dir == "left") {
+		map<string, set<string>> res;
+		set<string> G;
+		map<pair<string, string>, set<string>> reverse;
+		for (auto x : _to) {
+			for (auto y : x.second) {
+				reverse[make_pair(y, x.first.second)].insert(x.first.first);
+			}
+		}
+		for (auto x : reverse) {
+			if (!x.second.empty())
+				for (auto y : x.second) {
+					res[x.first.first].insert(y + x.first.second);
+					if (_initial_state == y) res[x.first.first].insert(x.first.second);
+				}
+		}
+		for (auto x : res) {
+			if (!x.second.empty()) {
+				bool f = 0;
+				string s = "";
+				for (auto y : x.second) {
+					if (f == 0) s += x.first + " -> " + y;
+					else s += "|" + y;
+					f = 1;
+				}
+				G.insert(s);
+			}
+		}
+		string s = "Z -> ";
+		bool f = 0;
+		for (auto x : _final_state) {
+			if (f == 0) s += x;
+			else s += "|" + x;
+			f = 1;
+		}
+		G.insert(s);
+		return G;
+	}
 }
 
-void automaton::output_grammer(string filename) {
+void automaton::output_grammer(string dir,string filename) {
 	assert(_fa_type == "DFA");
-	set<string> G = grammer();
+	set<string> G = grammer(dir);
 	filename += ".txt";
 	ofstream fout(filename.c_str());
-	fout << "variable: ";
-	for (auto s : _state) fout << s << " ";
-	fout << endl;
-	fout << "terminal: ";
-	for (auto chr : _sigma) fout << chr << " ";
-	fout << endl;
-	fout << "start symbol: " << _initial_state << endl;
-	fout << "production: " << endl;
-	for (auto s : G) {
-		fout << s << endl;
+	if (dir == "right") {
+		fout << "variable: ";
+		for (auto s : _state) fout << s << " ";
+		fout << endl;
+		fout << "terminal: ";
+		for (auto chr : _sigma) fout << chr << " ";
+		fout << endl;
+		fout << "start symbol: " << _initial_state << endl;
+		fout << "production: " << endl;
+		for (auto s : G) {
+			fout << s << endl;
+		}
+	}
+	else if (dir == "left") {
+		fout << "variable: ";
+		for (auto s : _state) fout << s << " ";
+		fout << "Z ";
+		fout << endl;
+		fout << "terminal: ";
+		for (auto chr : _sigma) fout << chr << " ";
+		fout << endl;
+		fout << "start symbol: " << "Z" << endl;
+		fout << "production: " << endl;
+		for (auto s : G) {
+			fout << s << endl;
+		}
 	}
 }

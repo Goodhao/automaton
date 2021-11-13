@@ -18,7 +18,7 @@ to
 
 ![](result.png)
 
-NFA to DFA:
+NFA to DFA
 
 ![](origin2.png)
 

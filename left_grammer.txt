@@ -1,0 +1,8 @@
+variable: a b c d Z 
+terminal: 0 1 
+start symbol: Z
+production: 
+Z -> d
+a -> b0|c1
+b -> 0|a0|d0|d1
+d -> 1|a1|b1|c0
