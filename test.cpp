@@ -9,9 +9,10 @@ int main() {
 	cout << "1.Turn a eps-NFA to a NFA" << endl;
 	cout << "2.Turn a eps-NFA to a DFA" << endl;
 	cout << "3.Turn a NFA to a DFA" << endl;
-	cout << "4.Turn a DFA to a right grammer" << endl;
-	cout << "5.Turn a DFA to a left grammer ( not allow Z, which keeps for special meaning )" << endl;
+	cout << "4.Turn a FA to a right grammer" << endl;
+	cout << "5.Turn a FA to a left grammer ( not allow inputing Z, which keeps for special meaning )" << endl;
 	cout << "6.Just Draw Picture of FA" << endl;
+	cout << "7.Turn a DFA to its regular expression ( not allow inputing X or Y, which keep for special meaning )" << endl;
 	int num;
 	cin >> num;
 	if (num == 1) {
@@ -52,6 +53,21 @@ int main() {
 		automaton a;
 		a.input();
 		a.draw("draw");
+	}
+	else if (num == 7) {
+		automaton a;
+		a.input();
+		vector<string> order;
+		cout << "please input to-delete states in order, you can input # to automaticlly do it" << endl;
+		string s = "";
+		while (s == "") getline(cin, s);
+		if (s != "#") {
+			stringstream ss(s);
+			while (ss >> s) {
+				order.push_back(s);
+			}
+		}
+		a.to_reg("reg",order);
 	}
 	Sleep(1000);
 	return 0;

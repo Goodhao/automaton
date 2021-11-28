@@ -1,8 +1,8 @@
-variable: a b c d Z 
+variable: q0 q1 q2 q3 Z 
 terminal: 0 1 
 start symbol: Z
 production: 
-Z -> d
-a -> b0|c1
-b -> 0|a0|d0|d1
-d -> 1|a1|b1|c0
+Z -> 1|q01|q11
+q0 -> q10
+q1 -> 0|q00|q30|q31
+q3 -> 1|q01|q11

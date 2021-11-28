@@ -223,14 +223,91 @@ void automaton::draw(string filename) {
 	system(cmd.c_str());
 }
 
+void automaton::get_edge() {
+	for (auto x : _to) {
+		for (auto y : x.second) {
+			_edge[make_pair(x.first.first, y)].insert(x.first.second);
+		}
+	}
+}
+
+void automaton::merge_edge() {
+	for (auto x : _state) for (auto y : _state) {
+		if (_edge[make_pair(x, y)].size() > 1) {
+			string s = "";
+			bool eps = 0;
+			for (auto str : _edge[make_pair(x, y)]) {
+				if (str != "eps") {
+					if (s == "") s += str;
+					else s += "+" + str;
+				}
+				else eps = 1;
+			}
+			if (s == "" && eps) s = "eps";
+			_edge[make_pair(x, y)].clear();
+			_edge[make_pair(x, y)].insert(s);
+		}
+	}
+}
+
+void automaton::get_reachable() {
+	// 这里的可达是指可以作为从初始状态到接受状态的中间态
+	// 书上的可达有时只是指可以从初始状态出发走到，有时也采取这里的定义
+	// 这里的可达排除了陷阱状态（初始状态可以走到它，但它走不到接受状态）
+	map<pair<string, string>, set<string>> reverse;
+	for (auto x : _to) {
+		for (auto y : x.second) {
+			reverse[make_pair(y, x.first.second)].insert(x.first.first);
+		}
+	}
+	set<string> reachable1, reachable2;
+	queue<string> q;
+	string s;
+
+	for (auto x : _final_state) {
+		q.push(x);
+		reachable1.insert(x);
+	}
+	while (!q.empty()) {
+		s = q.front();
+		q.pop();
+		for (auto chr : _sigma) {
+			for (auto x : reverse[make_pair(s, chr)]) {
+				if (reachable1.count(x) == 0) {
+					q.push(x);
+					reachable1.insert(x);
+				}
+			}
+		}
+	}
+	while (!q.empty()) q.pop();
+	q.push(_initial_state);
+	reachable2.insert(_initial_state);
+	while (!q.empty()) {
+		s = q.front();
+		q.pop();
+		for (auto chr : _sigma) {
+			for (auto x : _to[make_pair(s, chr)]) {
+				if (reachable2.count(x) == 0) {
+					q.push(x);
+					reachable2.insert(x);
+				}
+			}
+		}
+	}
+	for (auto x : _state) if (reachable1.count(x) && reachable2.count(x)) {
+		_reachable.insert(x);
+	}
+}
+
 set<string> automaton::grammer(string dir) {
-	assert(_fa_type == "DFA");
+	get_reachable();
 	if (dir == "right") {
 		map<string, set<string>> res;
 		set<string> G;
-		for (auto x : _to) {
+		for (auto x : _to) if (_reachable.count(x.first.first) != 0) {
 			if (!x.second.empty())
-				for (auto y : x.second) {
+				for (auto y : x.second) if (_reachable.count(y) != 0) {
 					res[x.first.first].insert(x.first.second + y);
 					if (_final_state.count(y)) res[x.first.first].insert(x.first.second);
 				}
@@ -259,12 +336,13 @@ set<string> automaton::grammer(string dir) {
 				reverse[make_pair(y, x.first.second)].insert(x.first.first);
 			}
 		}
-		for (auto x : reverse) {
-			if (!x.second.empty())
-				for (auto y : x.second) {
+		for (auto x : reverse) if (_reachable.count(x.first.first) != 0) {
+			if (!x.second.empty()) {
+				for (auto y : x.second) if (_reachable.count(y) != 0) {
 					res[x.first.first].insert(y + x.first.second);
 					if (_initial_state == y) res[x.first.first].insert(x.first.second);
 				}
+			}
 		}
 		for (auto x : res) {
 			if (!x.second.empty()) {
@@ -280,10 +358,23 @@ set<string> automaton::grammer(string dir) {
 		}
 		string s = "Z -> ";
 		bool f = 0;
-		for (auto x : _final_state) {
-			if (f == 0) s += x;
-			else s += "|" + x;
-			f = 1;
+		bool eps = 0;
+		for (auto chr : _sigma) for (auto x : _final_state) {
+			if (_initial_state == x) eps = 1;
+			for (auto y : reverse[make_pair(x, chr)]) if (_reachable.count(y) != 0) {
+				if (_initial_state == y) {
+					if (f == 0) s += chr;
+					else s += "|" + chr;
+					f = 1;
+				}
+				if (f == 0) s += y + chr;
+				else s += "|" + y + chr;
+				f = 1;
+			}
+		}
+		if (eps) {
+			if (f == 0) s += "\u03B5";
+			else s += "|\u03B5";
 		}
 		G.insert(s);
 		return G;
@@ -321,5 +412,122 @@ void automaton::output_grammer(string dir,string filename) {
 		for (auto s : G) {
 			fout << s << endl;
 		}
+	}
+}
+
+pair<int, int> automaton::deg(string x) {
+	// 不考虑自环对度的贡献
+	pair<int, int> res;
+	for (auto y : _state) if (x != y) {
+		res.first += _edge[make_pair(x, y)].size();
+		res.second += _edge[make_pair(y, x)].size();
+	}
+	return res;
+}
+inline string bracket(string s) {
+	if (s == "eps") return "";
+	if (s.size() == 1 || s.find("+") == -1) return s;
+	else return "(" + s + ")";
+}
+inline string star(string s) {
+	if (s == "eps") return "";
+	if (s.size() == 1) return s + "*";
+	else return "(" + s + ")*";
+}
+void automaton::to_reg(string filename, vector<string> order) {
+	assert(_state.count("X") == 0 && _state.count("Y") == 0);
+	get_reachable();
+	if (_reachable.count(_initial_state) == 0) return;
+	for (auto x : _to) {
+		if (_reachable.count(x.first.first) == 0) {
+			_to.erase(x.first);
+		}
+		else {
+			for (auto y : x.second) {
+				if (_reachable.count(y) == 0) {
+					x.second.erase(y);
+				}
+			}
+		}
+	}
+	for (auto x : _state) if (_reachable.count(x) == 0) {
+		_state.erase(x);
+		_final_state.erase(x);
+	}
+	if (_final_state.empty()) return;
+	_to[make_pair("X", "eps")].insert(_initial_state);
+	for (auto x : _final_state) _to[make_pair(x, "eps")].insert("Y");
+	_initial_state = "X";
+	_final_state.clear();
+	_final_state.insert("Y");
+	for (auto x : _state) order.push_back(x);
+	_state.insert("X");
+	_state.insert("Y");
+	get_edge();
+	/*
+	for (auto x : _state) for (auto y : _state) {
+		cout << x << " " << y << ": ";
+		for (auto s : _edge[make_pair(x, y)]) {
+			cout << s << " ";
+		}
+		cout << endl;
+	}*/
+	int p = -1;
+	while (1) {
+		merge_edge();
+		if (_state.size() <= 2) break;
+		p++;
+		string to_delete = "";// 一次最多删除一个点
+		string y = order[p];
+		if (to_delete == "") for (auto x : _state) {
+			for (auto z : _state) if ((x != y && !_edge[make_pair(x, y)].empty() || x == y && deg(y).first == 0) && (y != z && !_edge[make_pair(y, z)].empty() || y == z && deg(y).second == 0)) {
+				//cout << x << " " << y << " " << z << endl;
+				if (_edge[make_pair(y, y)].empty()) {
+					if (x != y) for (auto s1 : _edge[make_pair(x, y)]) if (z != y) for (auto s2 : _edge[make_pair(y, z)]) {
+						_edge[make_pair(x, z)].insert(bracket(s1) + bracket(s2));
+						to_delete = y;
+					}
+					//if (to_delete != "") cout << x << " " << y << " " << z << " type: 1" << endl;
+				}
+				else {
+					if (x != y) for (auto s1 : _edge[make_pair(x, y)]) for (auto s2 : _edge[make_pair(y, y)]) if (z != y) for (auto s3 : _edge[make_pair(y, z)]) {
+						_edge[make_pair(x, z)].insert(bracket(s1) + star(s2) + bracket(s3));
+						to_delete = y;
+					}
+					if (x != y) for (auto s1 : _edge[make_pair(x, y)]) for (auto s2 : _edge[make_pair(y, y)]) if (z == y) {
+						_edge[make_pair(x, z)].insert(bracket(s1) + star(s2));
+						to_delete = y;
+					}
+					if (x == y) for (auto s2 : _edge[make_pair(y, y)]) if (z != y) for (auto s3 : _edge[make_pair(y, z)]) {
+						_edge[make_pair(x, z)].insert(star(s2) + bracket(s3));
+						to_delete = y;
+					}
+					//if (to_delete != "") cout << x << " " << y << " " << z << " type: 2" << endl;
+				}
+			}
+		}
+		for (auto x : _state) {
+			_edge[make_pair(to_delete, x)].clear();
+			_edge[make_pair(x, to_delete)].clear();
+		}
+		_state.erase(to_delete);
+		//cout << "delete: " << to_delete << endl;
+		/*
+		for (auto x : _state) for (auto y : _state) {
+			cout << x << " " << y << ": ";
+			for (auto s : _edge[make_pair(x, y)]) {
+				cout << s << " ";
+			}
+			cout << endl;
+		}*/
+	}
+	if (_edge[make_pair("X", "Y")].empty()) {
+		return;
+	}
+	else {
+		cout << "regular expression is generated successfully" << endl;
+		filename += ".txt";
+		ofstream fout(filename.c_str());
+		fout << *_edge[make_pair("X", "Y")].begin() << endl;
 	}
 }
