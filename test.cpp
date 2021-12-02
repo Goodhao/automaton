@@ -12,7 +12,7 @@ int main() {
 	cout << "4.Turn a FA to a right grammer" << endl;
 	cout << "5.Turn a FA to a left grammer ( not allow inputing Z, which keeps for special meaning )" << endl;
 	cout << "6.Just Draw Picture of FA" << endl;
-	cout << "7.Turn a DFA to its regular expression ( not allow inputing X or Y, which keep for special meaning )" << endl;
+	cout << "7.Turn a FA to its regular expression ( not allow inputing X or Y, which keep for special meaning )" << endl;
 	int num;
 	cin >> num;
 	if (num == 1) {
@@ -26,7 +26,7 @@ int main() {
 		automaton a;
 		a.input();
 		automaton b = a.turn_to_NFA();
-		automaton c = a.turn_to_DFA();
+		automaton c = b.turn_to_DFA();
 		c.draw("DFA");
 		cout << " DFA picture has been saved at DFA.png" << endl;
 	}
