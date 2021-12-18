@@ -599,6 +599,7 @@ void automaton::minimalization() {
 			for (auto chr : _sigma) if (!_to[make_pair(x, chr)].empty() && !_to[make_pair(y, chr)].empty()) {
 				auto nxt_x = *_to[make_pair(x, chr)].begin();
 				auto nxt_y = *_to[make_pair(y, chr)].begin();
+				if (nxt_x > nxt_y) swap(nxt_x, nxt_y);
 				if (_table[idx[nxt_x]][idx[nxt_y]]) {
 					recursive_deletion(i, j);
 					break;
