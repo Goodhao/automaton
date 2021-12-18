@@ -1,18 +1,14 @@
 digraph cinite_state_machine {
 rankdir=LR;
 size="50,50"
-node [shape = doublecircle]; "[q0]" "[q1]" "[q2]" ;
+node [shape = doublecircle]; "[q2]" ;
 node [shape = circle]; "[q0]";
 node [shape = plain]; "S";
 "S" -> "[q0]";
 node [shape = circle];
-"[q0]" -> "[q2]" [label = "b"];
-"[q0]" -> "[q3]" [label = "a"];
-"[q1]" -> "[q3]" [label = "a"];
-"[q1]" -> "[trap]" [label = "b"];
-"[q2]" -> "[q2]" [label = "b"];
-"[q2]" -> "[trap]" [label = "a"];
-"[q3]" -> "[q1]" [label = "a"];
-"[q3]" -> "[trap]" [label = "b"];
-"[trap]" -> "[trap]" [label = "a,b"];
+"[q0]" -> "[q0]" [label = "0"];
+"[q0]" -> "[q2]" [label = "1"];
+"[q2]" -> "[q2]" [label = "0"];
+"[q2]" -> "[q5]" [label = "1"];
+"[q5]" -> "[q5]" [label = "0,1"];
 }

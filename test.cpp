@@ -69,6 +69,12 @@ int main() {
 		}
 		a.to_reg("reg",order);
 	}
+	else if (num == 8) {
+		automaton a;
+		a.input();
+		a.minimalization();
+		a.draw("draw");
+	}
 	Sleep(1000);
 	return 0;
 }

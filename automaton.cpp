@@ -250,7 +250,7 @@ void automaton::merge_edge() {
 	}
 }
 
-void automaton::get_reachable() {
+void automaton::get_reachable(int code = 0) {
 	// 这里的可达是指可以作为从初始状态到接受状态的中间态
 	// 书上的可达有时只是指可以从初始状态出发走到，有时也采取这里的定义
 	// 这里的可达排除了陷阱状态（初始状态可以走到它，但它走不到接受状态）
@@ -295,8 +295,14 @@ void automaton::get_reachable() {
 			}
 		}
 	}
-	for (auto x : _state) if (reachable1.count(x) && reachable2.count(x)) {
-		_reachable.insert(x);
+	for (auto x : _state) {
+		if (code == 0 && reachable1.count(x) && reachable2.count(x)) {
+			_reachable.insert(x);
+		} else if (code == 1 && reachable1.count(x)) {
+			_reachable.insert(x);
+		} else if (code == 2 && reachable2.count(x)) {
+			_reachable.insert(x);
+		}
 	}
 }
 
@@ -530,4 +536,114 @@ void automaton::to_reg(string filename, vector<string> order) {
 		ofstream fout(filename.c_str());
 		fout << *_edge[make_pair("X", "Y")].begin() << endl;
 	}
+}
+
+void automaton::recursive_deletion(int x,int y) {
+	if (_table[x][y]) return;
+	_table[x][y] = 1;
+	for (auto p : _link[x][y]) {
+		recursive_deletion(p.first, p.second);
+	}
+}
+
+string find(map<string, string> & fa, string x) {
+	if (x == fa[x]) return x;
+	else return (fa[x] = find(fa, fa[x]));
+}
+
+void automaton::minimalization() {
+	assert(_fa_type == "DFA");
+	get_reachable(2);
+	if (_reachable.count(_initial_state) == 0) return;
+	for (auto x : _to) {
+		if (_reachable.count(x.first.first) == 0) {
+			_to.erase(x.first);
+		}
+		else {
+			for (auto y : x.second) {
+				if (_reachable.count(y) == 0) {
+					x.second.erase(y);
+				}
+			}
+		}
+	}
+	for (auto x : _state) if (_reachable.count(x) == 0) {
+		_state.erase(x);
+		_final_state.erase(x);
+	}
+	int n = _state.size();
+	vector<string> state;
+	map<string, int> idx;
+	int cnt = 0;
+	for (auto x : _state) {
+		state.push_back(x);
+		idx[x] = cnt++;
+	}
+	_table.resize(n);
+	_link.resize(n);
+	for (int i = 0; i < n; i++) {
+		_table[i].resize(n);
+		_link[i].resize(n);
+	}
+	for (int i = 0; i < n - 1; i++) {
+		for (int j = i + 1; j < n; j++) {
+			auto x = state[i], y = state[j];
+			if (_final_state.count(x) && !_final_state.count(y) || _final_state.count(y) && !_final_state.count(x)) {
+				recursive_deletion(i, j);
+			}
+		}
+	}
+	for (int i = 0; i < n - 1; i++) {
+		for (int j = i + 1; j < n; j++) {
+			auto x = state[i], y = state[j];
+			for (auto chr : _sigma) if (!_to[make_pair(x, chr)].empty() && !_to[make_pair(y, chr)].empty()) {
+				auto nxt_x = *_to[make_pair(x, chr)].begin();
+				auto nxt_y = *_to[make_pair(y, chr)].begin();
+				if (_table[idx[nxt_x]][idx[nxt_y]]) {
+					recursive_deletion(i, j);
+					break;
+				}
+				else if (nxt_x != nxt_y && make_pair(x, y) != make_pair(nxt_x, nxt_y)) {
+					_link[idx[nxt_x]][idx[nxt_y]].push_back(make_pair(i, j));
+				}
+			}
+		}
+	}
+	cout << "Equivalence Parition:" << endl;
+	for (int i = 0; i < n - 1; i++) {
+		for (int j = i + 1; j < n; j++) {
+			if (_table[i][j] == 0) {
+				auto x = state[i], y = state[j];
+				cout << "(" << x << "," << y << ")" << endl;
+			}
+		}
+	}
+	// 并查集合并等价类
+	map<string, string> fa;
+	for (auto x : _state) fa[x] = x;
+	for (int i = 0; i < n - 1; i++) {
+		for (int j = i + 1; j < n; j++) {
+			if (_table[i][j] == 0) {
+				string u = find(fa, state[i]), v = find(fa, state[j]);
+				if (u != v) {
+					if (v < u) fa[u] = v;
+					else fa[v] = u;
+				}
+			}
+		}
+	}
+	automaton res;
+	res._fa_type = "DFA";
+	for (auto x : _state) {
+		cout << x << " " << find(fa, x) << endl;
+		res._state.insert(find(fa, x));
+	}
+	res._initial_state = find(fa, _initial_state);
+	for (auto x : _final_state) res._final_state.insert(find(fa, x));
+	res._sigma = _sigma;
+	for (auto x : _to) {
+		auto p = make_pair(find(fa, x.first.first), x.first.second);
+		for (auto y : x.second) res._to[p].insert(find(fa, y));
+	}
+	(*this) = res;
 }

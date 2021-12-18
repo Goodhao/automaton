@@ -17,13 +17,15 @@ public:
 	automaton turn_to_DFA();
 	set<string> eps_closure(string &st);
 	set<string> grammer(string dir);
-	void get_reachable();
+	void get_reachable(int code);
 	void get_edge();
 	void merge_edge();
 	void output_grammer(string dir, string filename);
 	//void translate(set<string> G);
 	void to_reg(string filename, vector<string> order);
 	pair<int,int> deg(string x);
+	void recursive_deletion(int x,int y);
+	void minimalization();
 	void to_FA();
 	void draw(string filename);
 	void input();
@@ -36,4 +38,6 @@ private:
 	map<pair<string, string>, set<string>> _to;
 	map<pair<string, string>, set<string>> _edge;
 	set<string> _reachable;
+	vector<vector<vector<pair<int, int>>>> _link;
+	vector<vector<int>> _table;
 };
