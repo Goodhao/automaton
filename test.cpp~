@@ -9,8 +9,8 @@ int main() {
 	cout << "1.Turn an eps-NFA to a NFA" << endl;
 	cout << "2.Turn an eps-NFA to a DFA" << endl;
 	cout << "3.Turn a NFA to a DFA" << endl;
-	cout << "4.Turn a FA to a right grammar" << endl;
-	cout << "5.Turn a FA to a left grammar ( not allow inputing Z, which keeps for special meaning )" << endl;
+	cout << "4.Turn a FA to a right grammer" << endl;
+	cout << "5.Turn a FA to a left grammer ( not allow inputing Z, which keeps for special meaning )" << endl;
 	cout << "6.Just Draw Picture of FA" << endl;
 	cout << "7.Turn a FA to its regular expression ( not allow inputing X or Y, which keep for special meaning )" << endl;
 	cout << "8.Minimalize a DFA" << endl;
@@ -42,14 +42,14 @@ int main() {
 	else if (num == 4) {
 		automaton a;
 		a.input();
-		a.output_grammar("right","right_grammar");
-		cout << " right grammar has been saved at right_grammar.txt" << endl;
+		a.output_grammer("right","right_grammer");
+		cout << " right grammer has been saved at right_grammer.txt" << endl;
 	}
 	else if (num == 5) {
 		automaton a;
 		a.input();
-		a.output_grammar("left", "left_grammar");
-		cout << " left grammar has been saved at left_grammar.txt" << endl;
+		a.output_grammer("left", "left_grammer");
+		cout << " left grammer has been saved at left_grammer.txt" << endl;
 	}
 	else if (num == 6) {
 		automaton a;

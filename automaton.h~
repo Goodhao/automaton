@@ -16,12 +16,12 @@ public:
 	automaton turn_to_NFA();
 	automaton turn_to_DFA();
 	set<string> eps_closure(string &st);
-	set<string> grammar(string dir);
+	set<string> grammer(string dir);
 	void get_reachable(int code);
 	automaton simplify();
 	void get_edge();
 	void merge_edge();
-	void output_grammar(string dir, string filename);
+	void output_grammer(string dir, string filename);
 	void to_reg(string filename, vector<string> order);
 	pair<int,int> deg(string x);
 	void recursive_deletion(int x,int y);

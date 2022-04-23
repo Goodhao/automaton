@@ -321,7 +321,7 @@ automaton automaton::simplify() {
 	return res;
 }
 
-set<string> automaton::grammar(string dir) {
+set<string> automaton::grammer(string dir) {
 	get_reachable();
 	if (dir == "right") {
 		map<string, set<string>> res;
@@ -402,9 +402,9 @@ set<string> automaton::grammar(string dir) {
 	}
 }
 
-void automaton::output_grammar(string dir,string filename) {
+void automaton::output_grammer(string dir,string filename) {
 	assert(_fa_type == "DFA");
-	set<string> G = grammar(dir);
+	set<string> G = grammer(dir);
 	filename += ".txt";
 	ofstream fout(filename.c_str());
 	if (dir == "right") {

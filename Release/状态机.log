@@ -1,7 +1,13 @@
-﻿  automaton.cpp
+﻿  grammar.cpp
+C:\Users\Administrator\source\repos\状态机\状态机\grammar.cpp(80,22): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\Administrator\source\repos\状态机\状态机\grammar.cpp(161,22): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\Administrator\source\repos\状态机\状态机\grammar.cpp(162,27): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\Administrator\source\repos\状态机\状态机\grammar.cpp(166,25): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\Administrator\source\repos\状态机\状态机\grammar.cpp(177,27): warning C4018: “<”: 有符号/无符号不匹配
+C:\Users\Administrator\source\repos\状态机\状态机\grammar.cpp(180,27): warning C4018: “<”: 有符号/无符号不匹配
   正在生成代码
-  10 of 1662 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
-    9 functions were new in current compilation
-    46 functions had inline decision re-evaluated but remain unchanged
+  20 of 578 functions ( 3.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    14 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
   状态机.vcxproj -> C:\Users\Administrator\source\repos\状态机\Release\状态机.exe

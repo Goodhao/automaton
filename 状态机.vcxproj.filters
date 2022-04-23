@@ -18,12 +18,18 @@
     <ClCompile Include="automaton.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="test.cpp">
+    <ClCompile Include="grammar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test2.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="automaton.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="grammar.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
